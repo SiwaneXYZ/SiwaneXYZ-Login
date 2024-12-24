@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        input { width: 100%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px; background-color: #007BFF; color: white; border: none; cursor: pointer; width: 100%; }
+        .social-buttons { display: flex; justify-content: space-between; }
+        .social-button { flex: 1; margin: 5px; padding: 10px; background-color: #f0f0f0; border: 1px solid #ccc; cursor: pointer; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>تسجيل الدخول</h2>
+        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+        <input type="password" id="password" placeholder="كلمة المرور" required>
+        <button onclick="login()">تسجيل الدخول</button>
+        
+        <div class="social-buttons">
+            <div class="social-button" onclick="loginWithGoogle()">تسجيل الدخول باستخدام Google</div>
+            <div class="social-button" onclick="loginWithFacebook()">تسجيل الدخول باستخدام Facebook</div>
+            <div class="social-button" onclick="loginWithGitHub()">تسجيل الدخول باستخدام GitHub</div>
+            <div class="social-button" onclick="loginWithX()">تسجيل الدخول باستخدام X</div>
+        </div>
+
+        <p>ليس لديك حساب؟ <a href="signup.html">إنشاء حساب</a></p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js"></script>
+    <script>
+        // إعداد Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBef_NGheR6HHVAbWW1kvPprJc_cDuSp1k",
+            authDomain: "siwanexyz-login.firebaseapp.com",
+            projectId: "siwanexyz-login",
+            storageBucket: "siwanexyz-login.firebasestorage.app",
+            messagingSenderId: "720001450460",
+            appId: "1:720001450460:web:ceae4daa2c8396c64acf19"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    alert("تم تسجيل الدخول بنجاح!");
+                    window.location.href = "user.html"; // الانتقال إلى صفحة المستخدم
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+        }
+
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    alert("تم تسجيل الدخول باستخدام Google!");
+                    window.location.href = "user.html"; // الانتقال إلى صفحة المستخدم
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+        }
+
+        function loginWithFacebook() {
+            const provider = new firebase.auth.FacebookAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    alert("تم تسجيل الدخول باستخدام Facebook!");
+                    window.location.href = "user.html"; // الانتقال إلى صفحة المستخدم
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+        }
+
+        function loginWithGitHub() {
+            const provider = new firebase.auth.GithubAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    alert("تم تسجيل الدخول باستخدام GitHub!");
+                    window.location.href = "user.html"; // الانتقال إلى صفحة المستخدم
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+        }
+
+        function loginWithX() {
+            // يجب إعداد موفر X في Firebase
+            const provider = new firebase.auth.OAuthProvider('x.com');
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    alert("تم تسجيل الدخول باستخدام X!");
+                    window.location.href = "user.html"; // الانتقال إلى صفحة المستخدم
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+        }
+    </script>
+
+</body>
+</html>

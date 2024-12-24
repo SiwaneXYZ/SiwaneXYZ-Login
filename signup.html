@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        input { width: 100%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>إنشاء حساب</h2>
+        <input type="text" id="name" placeholder="الاسم" required>
+        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+        <input type="password" id="password" placeholder="كلمة المرور" required>
+        <input type="text" id="phone" placeholder="رقم الهاتف" required>
+        <button onclick="signup()">إنشاء حساب</button>
+        <p>لديك حساب بالفعل؟ <a href="login.html">تسجيل الدخول</a></p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
+    <script>
+        // إعداد Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBef_NGheR6HHVAbWW1kvPprJc_cDuSp1k",
+            authDomain: "siwanexyz-login.firebaseapp.com",
+            projectId: "siwanexyz-login",
+            storageBucket: "siwanexyz-login.firebasestorage.app",
+            messagingSenderId: "720001450460",
+            appId: "1:720001450460:web:ceae4daa2c8396c64acf19"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        function signup() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const phone = document.getElementById('phone').value;
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const userId = userCredential.user.uid;
+                    const dataToStore = btoa(`${email}{split}${name}{split}${phone}{split}premium-0-0-0`); // تشفير البيانات
+                    database.ref('data/' + userId).set(dataToStore).then(() => {
+                        alert("تم إنشاء الحساب بنجاح!");
+                        window.location.href = "login.html"; // الانتقال إلى صفحة تسجيل الدخول
+                    });
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة الأدمن</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        button { padding: 10px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>إدارة المستخدمين</h2>
+        <div id="userList"></div>
+        <button onclick="logout()">تسجيل الخروج</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
+    
+    <script>
+        // إعداد Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBef_NGheR6HHVAbWW1kvPprJc_cDuSp1k",
+            authDomain: "siwanexyz-login.firebaseapp.com",
+            projectId: "siwanexyz-login",
+            storageBucket: "siwanexyz-login.firebasestorage.app",
+            messagingSenderId: "720001450460",
+            appId: "1:720001450460:web:ceae4daa2c8396c64acf19"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                const email = user.email;
+                if (email === "admin@example.com") { // تحقق من أن المستخدم هو الأدمن
+                    loadUsers();
+                } else {
+                    alert("ليس لديك صلاحيات الوصول إلى صفحة الأدمن!");
+                    window.location.href = "user.html"; // الانتقال إلى صفحة المستخدم
+                }
+            } else {
+                window.location.href = "login.html"; // الانتقال إلى صفحة تسجيل الدخول
+            }
+        });
+
+        function loadUsers() {
+            const userList = document.getElementById('userList');
+            database.ref('data').once('value').then(snapshot => {
+                snapshot.forEach(childSnapshot => {
+                    const userId = childSnapshot.key;
+                    const userData = atob(childSnapshot.val()); // فك تشفير البيانات
+                    const [email, name, phone, premium] = userData.split('{split}');
+                    userList.innerHTML += `<div>
+                        <p>${name} (${email}) - ${phone} - ${premium}</p>
+                        <button onclick="toggleUser('${userId}')">تفعيل/إلغاء تفعيل</button>
+                        <button onclick="deleteUser('${userId}')">حذف</button>
+                    </div>`;
+                });
+            });
+        }
+
+        function toggleUser(userId) {
+            // يمكنك إضافة منطق لتفعيل/إلغاء تفعيل المستخدم هنا
+            alert("تم تحديث حالة المستخدم!");
+        }
+
+        function deleteUser(userId) {
+            database.ref('data/' + userId).remove().then(() => {
+                alert("تم حذف المستخدم!");
+                loadUsers(); // إعادة تحميل قائمة المستخدمين
+            });
+        }
+
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.href = "login.html"; // الانتقال إلى صفحة تسجيل الدخول
+            });
+        }
+    </script>
+
+</body>
+</html>

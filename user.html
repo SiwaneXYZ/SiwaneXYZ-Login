@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة المستخدم</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        button { padding: 10px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>مرحبا بك، <span id="userEmail"></span></h2>
+        <button onclick="logout()">تسجيل الخروج</button>
+        <h3>تغيير البيانات</h3>
+        <input type="text" id="newName" placeholder="اسم جديد">
+        <input type="text" id="newPhone" placeholder="رقم هاتف جديد">
+        <button onclick="updateProfile()">تحديث البيانات</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
+    <script>
+        // إعداد Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBef_NGheR6HHVAbWW1kvPprJc_cDuSp1k",
+            authDomain: "siwanexyz-login.firebaseapp.com",
+            projectId: "siwanexyz-login",
+            storageBucket: "siwanexyz-login.firebasestorage.app",
+            messagingSenderId: "720001450460",
+            appId: "1:720001450460:web:ceae4daa2c8396c64acf19"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('userEmail').innerText = user.email;
+                loadUserData(user.uid);
+            } else {
+                window.location.href = "login.html"; // الانتقال إلى صفحة تسجيل الدخول
+            }
+        });
+
+        function loadUserData(userId) {
+            database.ref('data/' + userId).once('value').then(snapshot => {
+                if (snapshot.exists()) {
+                    const data = atob(snapshot.val()); // فك تشفير البيانات
+                    const [email, name, phone, premium] = data.split('{split}');
+                    document.getElementById('userEmail').innerText = email;
+                    document.getElementById('newName').value = name;
+                    document.getElementById('newPhone').value = phone;
+                }
+            });
+        }
+
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.href = "login.html"; // الانتقال إلى صفحة تسجيل الدخول
+            });
+        }
+
+        function updateProfile() {
+            const newName = document.getElementById('newName').value;
+            const newPhone = document.getElementById('newPhone').value;
+            const userId = auth.currentUser.uid;
+            const email = auth.currentUser.email;
+
+            const dataToStore = btoa(`${email}{split}${newName}{split}${newPhone}{split}premium-0-0-0`); // تشفير البيانات
+            database.ref('data/' + userId).set(dataToStore).then(() => {
+                alert("تم تحديث البيانات بنجاح!");
+            }).catch((error) => {
+                alert(error.message);
+            });
+        }
+    </script>
+
+</body>
+</html>
